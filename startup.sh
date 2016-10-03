@@ -4,6 +4,7 @@ PORT=3000
 
 service postgresql start
 service redis-server start
+service nginx start
 service varnish start
 
 cd /Windshaft-cartodb

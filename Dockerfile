@@ -2,7 +2,7 @@
 # Cartodb container
 #
 FROM ubuntu:14.04
-MAINTAINER Stefan Verhoeven <s.verhoeven@esciencecenter.nl>
+MAINTAINER John Zhou <jzhou@satelytics.com>
 
 # Configuring locales
 ENV DEBIAN_FRONTEND noninteractive
@@ -87,17 +87,18 @@ RUN useradd -m -d /home/cartodb -s /bin/bash cartodb &&\
     pgtune \
     libgmp-dev \
     libicu-dev \
+    nginx \
   --no-install-recommends &&\
   rm -rf /var/lib/apt/lists/*
 
-RUN git config --global user.email you@example.com
-RUN git config --global user.name "Your Name"
+RUN git config --global user.email drzhouq@gmail.com
+RUN git config --global user.name "John Zhou"
 
 # ogr2ogr2 static build, see https://github.com/CartoDB/cartodb/wiki/How-to-build-gdal-and-ogr2ogr2
 RUN cd /opt && git clone https://github.com/OSGeo/gdal ogr2ogr2 && cd ogr2ogr2 && \
 git remote add cartodb https://github.com/cartodb/gdal && git fetch cartodb && \
 git checkout trunk && git pull origin trunk && \
-git checkout upstream && git merge -s ours --ff-only origin/trunk && \
+git checkout upstream && git merge -s ours --ff-only origin/trunk -m "Merged it"  && \
 git checkout ogr2ogr2 && git merge -s ours upstream -m "Merged it" && \
 cd ogr2ogr2 && ./configure --disable-shared && make -j 4 && \
 cp apps/ogr2ogr /usr/bin/ogr2ogr2 && rm -rf /opt/ogr2ogr2 /root/.gitconfig
@@ -194,13 +195,17 @@ RUN service postgresql start && service redis-server start && \
 # Enable CARTO Builder    
 #    bundle exec rake cartodb:features:enable_feature_for_all_users['editor-3'] && \
 #    bundle exec rake cartodb:features:enable_feature_for_all_users['explore_site']" && \
-	service postgresql stop && service redis-server stop
+	service postgresql stop && service redis-server stop && \
+# to resolve localhost if 127.0.0.1 is not used
+    echo 127.0.1.1 cartodb.localhost >> /etc/hosts && \
+# to avoid redis complain
+    echo vm.overcommit_memory=1 >> /etc/syslog.conf
 
-
+# we may not want to expose this after the nginx reverse proxy is setup
 EXPOSE 3000 8080 8181
 
 ENV GDAL_DATA /usr/share/gdal/1.10
-
+ADD ./config/cartodb.nginx.proxy.conf /etc/nginx/conf.d/cartodb.nginx.proxy.conf
 ADD ./startup.sh /opt/startup.sh
 
 CMD ["/bin/bash", "/opt/startup.sh"]
