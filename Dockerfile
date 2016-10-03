@@ -193,11 +193,9 @@ RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications
 RUN service postgresql start && service redis-server start && \
 	bash -l -c "cd /cartodb && bash script/create_dev_user || bash script/create_dev_user && bash script/setup_organization.sh" && \
 # Enable CARTO Builder    
-#    bundle exec rake cartodb:features:enable_feature_for_all_users['editor-3'] && \
-#    bundle exec rake cartodb:features:enable_feature_for_all_users['explore_site']" && \
+    #bundle exec rake cartodb:features:enable_feature_for_all_users['editor-3'] && \
+    #bundle exec rake cartodb:features:enable_feature_for_all_users['explore_site'] && \
 	service postgresql stop && service redis-server stop && \
-# to resolve localhost if 127.0.0.1 is not used
-    echo 127.0.1.1 cartodb.localhost >> /etc/hosts && \
 # to avoid redis complain
     echo vm.overcommit_memory=1 >> /etc/syslog.conf
 
