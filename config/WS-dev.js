@@ -65,7 +65,7 @@ var config = {
         // max number of rows to return when querying data, 0 means no limit
         row_limit: 65535,
         simplify_geometries: true,
-        use_overviews: true, // use overviews to retrieve raster
+        use_overviews: false, // use overviews to retrieve raster
         /*
          * Set persist_connection to false if you want
          * database connections to be closed on renderer

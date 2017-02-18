@@ -3,10 +3,16 @@
 PORT=3000
 
 service postgresql start
+rc=1
+while [ $rc != 0 ]
+do
+sleep 10 
+psql -U postgres geocoder -c "select count(*) from cdb_conf;"  
+rc=$?
+done 
 service redis-server start
 service nginx start
 service varnish start
-
 cd /Windshaft-cartodb
 node app.js development &
 

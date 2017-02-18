@@ -132,9 +132,12 @@ RUN git clone https://github.com/CartoDB/pg_schema_triggers.git && \
       make all install && \
       sed -i \
       "/#shared_preload/a shared_preload_libraries = 'schema_triggers.so'" \
-      /etc/postgresql/9.3/main/postgresql.conf
+      /etc/postgresql/9.3/main/postgresql.conf 
+#      sed -i \
+#     's/var\/lib\/postgresql\/9\.3\/main/postgresql_data/g' /etc/postgresql/9.3/main/postgresql.conf
 ADD ./template_postgis.sh /tmp/template_postgis.sh
-RUN service postgresql start && /bin/su postgres -c \
+#RUN mkdir /postgresql_data && mv /var/lib/postgresql/9.3/main /postgresql_data && ln -s /postgresql_data /var/lib/postgresql/9.3/main
+RUN  service postgresql start && /bin/su postgres -c \
       /tmp/template_postgis.sh && service postgresql stop
 
 # Install cartodb extension
@@ -200,7 +203,7 @@ RUN service postgresql start && service redis-server start && \
     echo vm.overcommit_memory=1 >> /etc/syslog.conf
 
 # we may not want to expose this after the nginx reverse proxy is setup
-EXPOSE 3000 8080 8181
+#EXPOSE 3000 8080 8181
 
 ENV GDAL_DATA /usr/share/gdal/1.10
 ADD ./config/cartodb.nginx.proxy.conf /etc/nginx/conf.d/cartodb.nginx.proxy.conf
