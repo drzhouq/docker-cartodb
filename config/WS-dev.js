@@ -41,7 +41,7 @@ var config = {
     // If log_filename is given logs will be written
     // there, in append mode. Otherwise stdout is used (default).
     // Log file will be re-opened on receiving the HUP signal
-    ,log_filename: undefined
+    ,log_filename: 'logs/winshaft.log'
     // Templated database username for authorized user
     // Supported labels: 'user_id' (read from redis)
     ,postgres_auth_user: 'development_cartodb_user_<%= user_id %>'

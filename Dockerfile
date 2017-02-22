@@ -200,13 +200,14 @@ RUN service postgresql start && service redis-server start && \
     #bundle exec rake cartodb:features:enable_feature_for_all_users['explore_site'] && \
 	service postgresql stop && service redis-server stop && \
 # to avoid redis complain
-    echo vm.overcommit_memory=1 >> /etc/syslog.conf
+    echo vm.overcommit_memory=1 >> /etc/syslog.conf 
 
 # we may not want to expose this after the nginx reverse proxy is setup
 #EXPOSE 3000 8080 8181
 
 ENV GDAL_DATA /usr/share/gdal/1.10
-ADD ./config/cartodb.nginx.proxy.conf /etc/nginx/conf.d/cartodb.nginx.proxy.conf
+#overwrite the default website
+ADD ./config/cartodb.nginx.proxy.conf /etc/nginx/sites-available/default
 ADD ./startup.sh /opt/startup.sh
 
 CMD ["/bin/bash", "/opt/startup.sh"]
